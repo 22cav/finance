@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QLin
 from PyQt6.QtCore import Qt, pyqtSignal
 from FinanceManager import FinanceManager
 import matplotlib.pyplot as plt
+from GraphManager import Graph_Widget
 
 
 class FinanceTracker(QMainWindow):
@@ -73,7 +74,7 @@ class FinanceTracker(QMainWindow):
         self.frame1 = QWidget(self.frame)
         self.current_balance_label = QLabel("Current Balance: ", self.frame1)
         self.current_balance_label.setStyleSheet("font-size: 24px; font-weight: bold; margin-bottom: 20px;")
-        self.current_balance_value = QLabel("€"+self.manager.get_balance(), self.frame1)
+        self.current_balance_value = QLabel("€"+str(self.manager.get_balance()), self.frame1)
         self.current_balance_value.setStyleSheet("font-size: 24px; margin-bottom: 20px;")
         self.transactions_label = QLabel("Last 5 Transactions:", self.frame1)
         self.transactions_label.setStyleSheet("font-size: 16px; margin-bottom: 10px;")
@@ -103,7 +104,7 @@ class FinanceTracker(QMainWindow):
         self.add_budget_button.setStyleSheet("padding: 10px; border-radius: 5px; background-color: #4CAF50; color: #fff; font-size: 16px;")
         self.add_budget_button.clicked.connect(self.show_add_budget_window)
         self.data_visualization_label = QLabel("Balance graph:", self.frame2)
-        # self.data_visualization_grap
+        self.data_visualization_graph = Graph_Widget(x = None, y = self.manager.return_n_balances(5), parent=self.frame2)
 
         # Set the layout for the second subframe
         grid2 = QGridLayout()

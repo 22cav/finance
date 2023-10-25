@@ -2,9 +2,11 @@ import pandas as pd
 
 class FinanceManager:
     def __init__(self, value):
-        self.balance = value
+        self.balance = float(value)
         self.columns = ['amount', 'date', 'description', 'new_balance']
         self.transactions = pd.DataFrame(columns=self.columns)
+        for i in range(0, 10):
+            self.add_transaction(10, '2021-01-01', 'test')
 
     def get_balance(self):
         return self.balance
@@ -23,14 +25,6 @@ class FinanceManager:
         self.add_transaction(-amount, date, description)
     
     def add_transaction(self, amount, date, description):
-        self.balance += amount
+        self.balance += float(amount)
         new_balance = self.balance
         self.transactions = pd.concat([self.transactions, pd.DataFrame(data=[[amount, date, description, new_balance]], columns=self.columns)], ignore_index=True)
-
-
-s = FinanceManager(100)
-s.add_transaction(-10, '2019-01-01', 'test')
-s.add_transaction(-10, '2019-01-01', 'test')
-print(s.return_n_transactions(2))
-
-
