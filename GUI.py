@@ -73,7 +73,7 @@ class FinanceTracker(QMainWindow):
         self.frame1 = QWidget(self.frame)
         self.current_balance_label = QLabel("Current Balance: ", self.frame1)
         self.current_balance_label.setStyleSheet("font-size: 24px; font-weight: bold; margin-bottom: 20px;")
-        self.current_balance_value = QLabel("€"+self.manager.balance(), self.frame1)
+        self.current_balance_value = QLabel("€"+self.manager.get_balance(), self.frame1)
         self.current_balance_value.setStyleSheet("font-size: 24px; margin-bottom: 20px;")
         self.transactions_label = QLabel("Last 5 Transactions:", self.frame1)
         self.transactions_label.setStyleSheet("font-size: 16px; margin-bottom: 10px;")
@@ -102,6 +102,8 @@ class FinanceTracker(QMainWindow):
         self.add_budget_button = QPushButton("Add Budget", self.frame2)
         self.add_budget_button.setStyleSheet("padding: 10px; border-radius: 5px; background-color: #4CAF50; color: #fff; font-size: 16px;")
         self.add_budget_button.clicked.connect(self.show_add_budget_window)
+        self.data_visualization_label = QLabel("Balance graph:", self.frame2)
+        # self.data_visualization_grap
 
         # Set the layout for the second subframe
         grid2 = QGridLayout()
@@ -109,6 +111,8 @@ class FinanceTracker(QMainWindow):
         grid2.addWidget(self.budget_label, 0, 0, alignment=Qt.AlignmentFlag.AlignCenter)
         grid2.addWidget(self.budget_list, 1, 0, alignment=Qt.AlignmentFlag.AlignCenter)
         grid2.addWidget(self.add_budget_button, 2, 0, alignment=Qt.AlignmentFlag.AlignCenter)
+        grid2.addWidget(self.data_visualization_label, 5, 0, alignment=Qt.AlignmentFlag.AlignCenter)
+        # grid2.addWidget(self.data_visualization_graph, 6, 0, alignment=Qt.AlignmentFlag.AlignCenter)
         self.frame2.setLayout(grid2)
 
         # Left panel: Add transaction
@@ -132,6 +136,16 @@ class FinanceTracker(QMainWindow):
         # Set the layout for the main widget
         self.frame.setLayout(grid)
 
+    def setup_add_transaction_ui(self):
+        """name = self.transaction_name_input.text()
+        amount = self.transaction_amount_input.text()
+        transaction_type = self.transaction_type_dropdown.currentText()
+        self.manager.add_transaction(name, amount, transaction_type)
+        self.current_balance_value.setText(f"${self.manager.current_balance:.2f}")
+        self.transactions_list.clear()
+        for transaction in self.manager.transactions[-5:]:
+            self.transactions_list.addItem(f"{transaction['name']}: ${transaction['amount']:.2f} ({transaction['type']})")"""
+
     def show_transactions_window(self):
         pass
         """self.transactions_window = Transactions_Window()
@@ -147,15 +161,6 @@ class FinanceTracker(QMainWindow):
         self.budget_list.addItem(budget)
         self.add_budget_window = None
 
-    def submit_transaction(self):
-        name = self.transaction_name_input.text()
-        amount = self.transaction_amount_input.text()
-        transaction_type = self.transaction_type_dropdown.currentText()
-        self.manager.add_transaction(name, amount, transaction_type)
-        self.current_balance_value.setText(f"${self.manager.current_balance:.2f}")
-        self.transactions_list.clear()
-        for transaction in self.manager.transactions[-5:]:
-            self.transactions_list.addItem(f"{transaction['name']}: ${transaction['amount']:.2f} ({transaction['type']})")
 
 class Load_Window(QMainWindow):
     submitClicked = pyqtSignal(str)
