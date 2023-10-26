@@ -118,10 +118,9 @@ class FinanceTracker(QMainWindow):
         self.transactions_list.setStyleSheet("padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc;")
         self.transactions_list.clear()
         #Show the last 5 transactions with mooney spent
-        for _, transaction in transactions.iterrows():
-            transaction = transaction.tolist()[0]
-            if transaction[0] < 0:
-                self.transactions_list.addItem(f"-€{abs(transaction[0])}: {transaction[2]}")
+        for transaction in transactions:
+            if float(transaction[0]) < 0:
+                self.transactions_list.addItem(f"-€{abs(float(transaction[0]))}: {transaction[2]}")
             else:
                 self.transactions_list.addItem(f"+€{transaction[0]}: {transaction[2]}")
         self.see_more_button = QPushButton("See all the transactions", self.frame1)
@@ -154,8 +153,8 @@ class FinanceTracker(QMainWindow):
         self.add_budget_button.clicked.connect(self.show_add_budget_window)
         self.data_visualization_label = QLabel("Balance graph:", self.frame2)
         self.data_visualization_label.setStyleSheet("font-size: 16px; margin-bottom: 10px;")
-        # Use the transactions to create a graph
-        self.data_visualization_graph = Graph_Widget(self.manager.return_n_balances(10), self.manager.return_n_transactions(10)['date'].tolist(), self.frame2)
+        # Use last balances and last dates to create a graph
+        self.data_visualization_graph = Graph_Widget(self.manager.return_n_dates(10), self.manager.return_n_balances(10), self.frame2)
         
         # Set the layout for the second subframe
         grid2 = QGridLayout()
