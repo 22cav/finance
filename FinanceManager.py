@@ -4,16 +4,17 @@ import datetime
 class FinanceManager:
 
     def __init__(self, value=0, filepath=None):
-        self.balance = value
+        self.balance = float(value)
         self.columns = ['amount', 'date', 'description', 'new_balance']
         self.transactions = pd.DataFrame(columns=self.columns)
         self.filepath = filepath
         self.budget = None
 
-    def Initialize_empty_file(self, name, amount):
+    def Initialize_empty_file(self, name: str, amount: int):
         # Create a file in the Saved Balances folder
-        file_name = F"Saved Balances/{name}.txt"
+        file_name = f"Saved Balances/{name}"
         self.balance = amount
+        self.filepath = name
         with open(file_name, "x") as f:
             # In the first line of the file, write the amount of money available
             f.write(f"amount:{amount} \n")
@@ -51,6 +52,7 @@ class FinanceManager:
         return self.transactions.tail(n)
     
     def return_n_balances(self, n):
+        print(self.transactions.tail(n)['new_balance'])
         return self.transactions.tail(n)['new_balance'].tolist()
     
     def remove_last_transaction(self):
@@ -62,8 +64,8 @@ class FinanceManager:
     
     def add_transaction(self, amount, date, description):
         self.balance += float(amount)
-        new_transaction = pd.DataFrame(data=[[amount, date, description, self.balance]], columns=self.columns)
-        self.transactions = pd.concat([self.transactions.dropna(), new_transaction.dropna()], ignore_index=True, axis=0)
+        new_transaction = pd.Series(data=[[amount, date, description, self.balance]])
+        self.transactions = pd.concat([self.transactions.dropna(axis=1), new_transaction], ignore_index=True, axis=0)          
         self.save_transaction((amount, date, description, self.balance))
 
     def save_transaction(self, transaction):
@@ -84,9 +86,6 @@ class FinanceManager:
         # Write the modified contents back to the file
         with open(f"Saved Balances/{self.filepath}", 'w') as f:
             f.writelines(lines)
-            
-# test the save function
 
-fm = FinanceManager(100, filepath='ewew.txt')
-fm.add_transaction(10, datetime.datetime.now(), 'test')
-fm.add_transaction(10, datetime.datetime.now(), 'test')
+
+           

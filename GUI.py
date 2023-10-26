@@ -42,8 +42,10 @@ class FinanceTracker(QMainWindow):
         self.label2 = QLabel("Please load a saved file or enter your available finances:", self.frame)
         self.label2.setStyleSheet("font-size: 16px; margin-bottom: 10px;")
         self.finances_available = QLineEdit(self.frame)
+        self.finances_available.setPlaceholderText("Your Current Balance")
         self.finances_available.setStyleSheet("padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc;")
         self.file_name = QLineEdit(self.frame)
+        self.file_name.setPlaceholderText("File Name")
         self.file_name.setStyleSheet("padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc;")
         self.submit_button = QPushButton("Submit", self.frame)
         self.submit_button.setStyleSheet("padding: 10px; border-radius: 5px; background-color: #4CAF50; color: #fff; font-size: 16px;")
@@ -84,17 +86,25 @@ class FinanceTracker(QMainWindow):
             self.setup_menu_ui()
 
     def submit_money(self):
-        finances = self.finances_available.text()
-        self.manager = FinanceManager(finances)
+        if self.file_name.text() == '':
+            self.file_name.setText("Untitled")
+        if self.finances_available.text() == '':
+            self.finances_available.setText("0")
+        try:
+            float(self.finances_available.text())
+        except:
+            self.finances_available.setText("0")
+        finances = float(self.finances_available.text())
+        self.manager = FinanceManager()
+        name = self.file_name.text() + ".txt"
         self.manager.Initialize_empty_file(name, finances)
-        name = self.file_name.text()
-        self.manager.Initialize_empty_file(name, finances)
-        self.setup_menu_ui(name+".txt")
+        self.setup_menu_ui()
 
     def setup_menu_ui(self):
         self.setGeometry(100, 100, 800, 600)
         self.frame = QWidget(self)
         self.setCentralWidget(self.frame)
+        transactions = self.manager.return_n_transactions(5)
         # Central Panel: Current balance, last 5 transactions log + "see more"
         self.frame1 = QWidget(self.frame)
         self.current_balance_label = QLabel("Current Balance: ", self.frame1)
@@ -106,9 +116,14 @@ class FinanceTracker(QMainWindow):
         self.transactions_list = QListWidget(self.frame1, )
         self.transactions_list.setFixedHeight(120)
         self.transactions_list.setStyleSheet("padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc;")
+        self.transactions_list.clear()
         #Show the last 5 transactions with mooney spent
-        for transaction in self.manager.return_n_transactions(5).iterrows():
-            self.transactions_list.addItem(transaction[1]['description'] + ": " + str(transaction[1]['amount']) + "€")
+        for _, transaction in transactions.iterrows():
+            transaction = transaction.tolist()[0]
+            if transaction[0] < 0:
+                self.transactions_list.addItem(f"-€{abs(transaction[0])}: {transaction[2]}")
+            else:
+                self.transactions_list.addItem(f"+€{transaction[0]}: {transaction[2]}")
         self.see_more_button = QPushButton("See all the transactions", self.frame1)
         self.see_more_button.setStyleSheet("padding: 10px; border-radius: 5px; background-color: #2196F3; color: #fff; font-size: 16px;")
         self.see_more_button.clicked.connect(self.show_transactions_window)
@@ -138,8 +153,10 @@ class FinanceTracker(QMainWindow):
         self.add_budget_button.setStyleSheet("padding: 10px; border-radius: 5px; background-color: #4CAF50; color: #fff; font-size: 16px;")
         self.add_budget_button.clicked.connect(self.show_add_budget_window)
         self.data_visualization_label = QLabel("Balance graph:", self.frame2)
-        self.data_visualization_graph = Graph_Widget(self.manager.return_n_transactions(10)['date'].tolist(), self.manager.return_n_balances(10), self.frame2)
-
+        self.data_visualization_label.setStyleSheet("font-size: 16px; margin-bottom: 10px;")
+        # Use the transactions to create a graph
+        self.data_visualization_graph = Graph_Widget(self.manager.return_n_balances(10), self.manager.return_n_transactions(10)['date'].tolist(), self.frame2)
+        
         # Set the layout for the second subframe
         grid2 = QGridLayout()
         grid2.setSpacing(20)
@@ -195,7 +212,7 @@ class FinanceTracker(QMainWindow):
         amount = self.amount.text()
         description = self.description.text()
         self.manager.add_transaction(amount, datetime.datetime.now(), description)
-        self.setup_menu_ui(self.loaded_file)
+        self.setup_menu_ui()
 
     def show_transactions_window(self):
         pass

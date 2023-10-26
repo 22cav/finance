@@ -1,0 +1,3 @@
+amount: 34.0
+transactions: | 0,2023-10-26 22:25:57.445854,Initial Balance,34.0
+budgets:
