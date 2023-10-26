@@ -17,9 +17,18 @@ class MplCanvas(FigureCanvasQTAgg):
 class Graph_Widget(QWidget):
     def __init__(self, x, y, parent=None, *args, **kwargs):
         super(Graph_Widget, self).__init__(*args, **kwargs)
-
         sc = MplCanvas(self, width=5, height=4, dpi=100)
-        sc.axes.plot([1,2,3,4,5], y)
+        if x is not None and y is not None:
+            sc.axes.plot(x, y)
+        sc.axes.set_xlabel('Date')
+        sc.axes.set_ylabel('Balance')
+        # hide the tick lines
+        sc.axes.get_xaxis().set_ticks([])
+        sc.axes.get_yaxis().set_ticks([])
+        # hide the values
+        sc.axes.get_xaxis().set_ticklabels([])
+        sc.axes.get_yaxis().set_ticklabels([])
         self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().addWidget(sc)
         self.show()
+    
