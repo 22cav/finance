@@ -1,0 +1,3 @@
+amount: 384.0
+transactions: | 0,2023-11-13 17:15:18.414684,Initial Balance,350.0 | 34,2023-11-13 17:16:02.661835,fsa,384.0
+budgets:
